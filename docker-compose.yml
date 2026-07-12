@@ -32,6 +32,7 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
     depends_on:
       - kafka
+
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: clickhouse-server
@@ -52,12 +53,14 @@ services:
         soft: 262144
         hard: 262144
     restart: always
-volumes:
-    clickhouse_data:
-    clickhouse_logs:
-app:
+
+  app:
     build: .
+    environment:
       - PYTHONUNBUFFERED=1
     depends_on:
       - kafka
 
+volumes:
+  clickhouse_data:
+  clickhouse_logs:
