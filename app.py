@@ -12,7 +12,6 @@ KAFKA_BROKER = 'kafka:9093'
 CLICKHOUSE_URL = 'http://clickhouse:8123'
 TOPIC = 'raw_events'
 
-# 1. Готовим ClickHouse
 def setup_clickhouse():
     query = """
     CREATE TABLE IF NOT EXISTS events (
@@ -22,13 +21,12 @@ def setup_clickhouse():
     while True:
         try:
             requests.post(CLICKHOUSE_URL, data=query)
-            logging.info("ClickHouse готов к работе.")
+            logging.info("ClickHouse is ready.")
             break
         except requests.exceptions.ConnectionError:
-            logging.warning("Жду ClickHouse...")
+            logging.warning("Waiting for ClickHouse...")
             time.sleep(2)
 
-# 2. Продюсер (Генерирует мусорный трафик)
 def generate_traffic():
     producer = KafkaProducer(
         bootstrap_servers=[KAFKA_BROKER],
@@ -38,9 +36,8 @@ def generate_traffic():
     while True:
         event = {"user_id": random.randint(1, 1000), "action": random.choice(actions)}
         producer.send(TOPIC, event)
-        time.sleep(0.5) # Кидаем по 2 ивента в секунду
+        time.sleep(0.5)
 
-# 3. Консьюмер (Забирает из Kafka и пишет в ClickHouse батчами)
 def consume_and_insert():
     consumer = KafkaConsumer(
         TOPIC, bootstrap_servers=[KAFKA_BROKER],
@@ -52,18 +49,15 @@ def consume_and_insert():
         event = msg.value
         batch.append(f"({event['user_id']}, '{event['action']}')")
         
-        # Набрали 10 штук — пушим в БД
         if len(batch) >= 10:
             query = f"INSERT INTO events (user_id, action) VALUES {','.join(batch)}"
             requests.post(CLICKHOUSE_URL, data=query)
-            logging.info(f"Батч из 10 ивентов улетел в ClickHouse")
+            logging.info(f"Batch of 10 events sent to ClickHouse")
             batch = []
 
 if __name__ == "__main__":
     setup_clickhouse()
     
-    # Запускаем генератор в фоновом потоке
     Thread(target=generate_traffic, daemon=True).start()
     
-    # Консьюмер работает в основном потоке
     consume_and_insert()
