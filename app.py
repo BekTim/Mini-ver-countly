@@ -52,7 +52,7 @@ def consume_and_insert():
         if len(batch) >= 10:
             query = f"INSERT INTO events (user_id, action) VALUES {','.join(batch)}"
             requests.post(CLICKHOUSE_URL, data=query)
-            logging.info(f"Batch of 10 events sent to ClickHouse")
+            logging.info("Batch of 10 events sent to ClickHouse") 
             batch = []
 
 if __name__ == "__main__":
