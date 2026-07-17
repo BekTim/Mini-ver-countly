@@ -3,12 +3,12 @@ name: Lint
 on:
   push:
     branches: [ main, master ]
-  pull_request:
+  pull_request: # for new branches
     branches: [ main, master ]
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest #VM 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -19,9 +19,9 @@ jobs:
           python-version: "3.11"
       
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install ruff
+        run: | #lint
+          python -m pip ins tall --upgrade pip
+          pip install ruff 
           
       - name: Run Ruff Linter
-        run: ruff check --output-format=github .
+        run: ruff check --output-format=github . # user-friendly output for GIT

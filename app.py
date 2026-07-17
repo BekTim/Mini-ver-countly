@@ -41,7 +41,7 @@ def setup_clickhouse():
             logging.warning("ClickHouse is still starting, waiting 2 seconds...")
             time.sleep(2)
 
-def generate_traffic():
+def generate_traffic(): #producer
     """Background thread: generates fake traffic and pushes it to Kafka."""
     logging.info("Traffic generator started...")
     
@@ -51,7 +51,7 @@ def generate_traffic():
     producer = KafkaProducer(
         bootstrap_servers=[KAFKA_BROKER],
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
-    )
+    )   
     
     actions = ['click', 'view', 'purchase', 'login']
     
@@ -64,7 +64,7 @@ def generate_traffic():
             
         time.sleep(0.5) # 2 events per second
 
-def consume_and_insert():
+def consume_and_insert(): #consumer
     """Main process: reads from Kafka and batch inserts into ClickHouse."""
     logging.info("Consumer started, waiting for messages from Kafka...")
     

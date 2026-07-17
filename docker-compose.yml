@@ -37,8 +37,6 @@ services:
     container_name: clickhouse-server
     ports:
       - "8123:8123" # HTTP interface
-      - "9000:9000" # Native client / TCP interface
-      - "9009:9009" # Inter-server replication (optional)
     environment:
       - CLICKHOUSE_DB=analytics_db
       - CLICKHOUSE_USER=admin

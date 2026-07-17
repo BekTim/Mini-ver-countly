@@ -2,18 +2,18 @@
 
 GREEN='\e[32m'
 RED='\e[31m'
-NC='\e[0m'
+NC='\e[0m' #drop colour
 
 RESPONSE=$(curl --silent localhost:8123)
 cnt=0
 
-if [[ "$RESPONSE" == *"Ok."* ]]; then
+if [[ "$RESPONSE" == *"Ok."* ]]; then # * anything before and after
     ((cnt++))
 else
     echo "ClickHouse is not available or returned unexpected response: '$RESPONSE'"
 fi
 
-if nc -z localhost 9092 &> /dev/null; then
+if nc -z localhost 9092 &> /dev/null; then #stdout stderr
     ((cnt++))
 else
     echo 'Kafka is not available'
