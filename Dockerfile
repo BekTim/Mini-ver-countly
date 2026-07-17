@@ -4,6 +4,6 @@ WORKDIR /app
 
 RUN pip install --no-cache-dir kafka-python requests
 
-COPY app.py .
+COPY src/app.py .
 
 CMD ["python", "-u", "app.py"]
